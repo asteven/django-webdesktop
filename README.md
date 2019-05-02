@@ -8,6 +8,8 @@ This runs:
 - guacamole java client
 - mysql db for java client
 
+WARNING: This exposes some ports on the host ip.
+   Do not use in an untrusted network.
 
 ```
 sudo docker-compose pull
