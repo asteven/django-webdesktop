@@ -1,0 +1,81 @@
+version: '3.7'
+
+networks:
+  guacamole:
+
+volumes:
+  guacamole-db:
+  guac-db-init-script:
+
+services:
+  guacamole:
+    image: guacamole/guacamole:latest
+    container_name: guacamole
+    networks:
+      - guacamole
+    restart: unless-stopped
+    environment:
+      - MYSQL_DATABASE=guacamole_db
+      - MYSQL_USER=guacamole_user
+      - MYSQL_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - GUACD_HOSTNAME=guacd
+      - MYSQL_HOSTNAME=guacamole-db
+    expose:
+      - 8080
+    ports: # only needed if testing java client
+      - "8009:8080"
+    depends_on:
+      - guacamole-db
+      - guacd
+
+  guacd:
+    image: guacamole/guacd:latest
+    container_name: guacd
+    networks:
+      - guacamole
+    restart: unless-stopped
+    expose:
+      - 4822
+    ports: # only needed if want to use localhost/hostip to connect
+      - "4822:4822"
+
+  guacamole-db:
+    image: mariadb:latest
+    container_name: guacamole-db
+    environment:
+      - MYSQL_DATABASE=guacamole_db
+      - MYSQL_USER=guacamole_user
+      - MYSQL_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - "guacamole-db:/var/lib/mysql"
+      - "guac-db-init-script:/docker-entrypoint-initdb.d"
+    restart: unless-stopped
+    networks:
+      - guacamole
+    depends_on:
+      - init-db-script
+
+  init-db-script:
+    image: guacamole/guacamole:latest
+    container_name: init_guac_script
+    environment:
+      - MYSQL_DATABASE=guacamole_db
+      - MYSQL_USER=guacamole_user
+      - MYSQL_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    entrypoint: '/bin/bash -c "/opt/guacamole/bin/initdb.sh --mysql > /mnt/initdb.sql" '
+    volumes:
+      - "guac-db-init-script:/mnt"
+    networks:
+      - guacamole
+
+  sshd:
+    image: danielguerra/alpine-sshd
+    container_name: alpine-sshd
+    command: "/bin/sh -c 'echo \"PermitRootLogin yes\" >> /etc/ssh/sshd_config; echo root:gugus | chpasswd; /usr/sbin/sshd -D'"
+    networks:
+      - guacamole
+    expose:
+      - 22
+    #ports: # only needed for manual testing
+    #  - "9922:22"
