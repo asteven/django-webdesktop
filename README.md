@@ -17,5 +17,6 @@ sudo docker-compose up
 ### Start django app
 
 ```
-./manage.py runserver
+pipenv install
+pipenv run ./manage.py runserver
 ```
