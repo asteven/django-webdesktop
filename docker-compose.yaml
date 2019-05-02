@@ -10,7 +10,6 @@ volumes:
 services:
   guacamole:
     image: guacamole/guacamole:latest
-    container_name: guacamole
     networks:
       - guacamole
     restart: unless-stopped
@@ -22,26 +21,24 @@ services:
       - MYSQL_HOSTNAME=guacamole-db
     expose:
       - 8080
-    ports: # only needed if testing java client
-      - "8009:8080"
+    #ports: # only needed if testing java client
+    #  - "8090:8080"
     depends_on:
       - guacamole-db
       - guacd
 
   guacd:
     image: guacamole/guacd:latest
-    container_name: guacd
     networks:
       - guacamole
     restart: unless-stopped
     expose:
       - 4822
     ports: # only needed if want to use localhost/hostip to connect
-      - "4822:4822"
+      - "4823:4822"
 
   guacamole-db:
     image: mariadb:latest
-    container_name: guacamole-db
     environment:
       - MYSQL_DATABASE=guacamole_db
       - MYSQL_USER=guacamole_user
@@ -58,7 +55,6 @@ services:
 
   init-db-script:
     image: guacamole/guacamole:latest
-    container_name: init_guac_script
     environment:
       - MYSQL_DATABASE=guacamole_db
       - MYSQL_USER=guacamole_user
@@ -71,7 +67,6 @@ services:
 
   sshd:
     image: danielguerra/alpine-sshd
-    container_name: alpine-sshd
     command: "/bin/sh -c 'echo \"PermitRootLogin yes\" >> /etc/ssh/sshd_config; echo root:gugus | chpasswd; /usr/sbin/sshd -D'"
     networks:
       - guacamole
