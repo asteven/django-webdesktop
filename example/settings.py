@@ -129,10 +129,10 @@ ASGI_APPLICATION = "example.routing.application"
 
 # guacd daemon host address and port
 GUACD_HOST = '127.0.0.1'
-GUACD_PORT = 4822
+GUACD_PORT = 4823
 
 # ssh login settings
-SSH_HOST = 'alpine-sshd'
+SSH_HOST = 'sshd'
 SSH_PORT = 22
 SSH_USER = 'root'
 SSH_PASSWORD = 'gugus'
