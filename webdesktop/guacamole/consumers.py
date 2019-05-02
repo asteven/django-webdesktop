@@ -39,11 +39,20 @@ class GuacamoleTunnelConsumer(WebsocketConsumer):
 
         self.client = GuacamoleClient(settings.GUACD_HOST, settings.GUACD_PORT,
             debug=True)
-        self.client.handshake(protocol='ssh',
-                         hostname=settings.SSH_HOST,
-                         port=settings.SSH_PORT,
-                         username=settings.SSH_USER,
-                         password=settings.SSH_PASSWORD)
+
+        # TODO: the connection info should come from DB/kv/wherever
+        if settings.DESKTOP_PROTOCOL == 'vnc':
+            self.client.handshake(protocol='vnc',
+                             hostname=settings.VNC_HOST,
+                             port=settings.VNC_PORT,
+                             password=settings.VNC_PASSWORD)
+        else:
+            self.client.handshake(protocol='ssh',
+                             hostname=settings.SSH_HOST,
+                             port=settings.SSH_PORT,
+                             username=settings.SSH_USER,
+                             password=settings.SSH_PASSWORD)
+
 
         self.keep_running = True
         # FIXME: I have no clue if this thing is thread safe. It seems to work ok for one client.

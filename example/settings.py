@@ -136,3 +136,11 @@ SSH_HOST = 'sshd'
 SSH_PORT = 22
 SSH_USER = 'root'
 SSH_PASSWORD = 'gugus'
+
+# vnc login settings
+VNC_HOST = 'vnc'
+VNC_PORT = 5901
+VNC_PASSWORD = 'vncpassword'
+
+DESKTOP_PROTOCOL = 'ssh'
+#DESKTOP_PROTOCOL = 'vnc'
